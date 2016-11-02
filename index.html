@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/daniel.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+                <section data-background-image="img/coffee-wall.jpg"><h1>Java API Design</h1></section>
+                <section data-background-image="img/coffee-wall.jpg"><h2>What's an API?<h2></section>
+                <section data-background-image="img/coffee-wall.jpg">
+                    <section><h2>What makes a <em>good</em> API?</h2></section>
+		    <section>
+			<h3>Comprehensibility</h3>
+			<ul>
+				<li>Suited to skill and knowledge of potential users</li>
+				<li>Familiar concepts <br/>(e.g. iterators, listeners instead of functors or monads :-)</li>
+				<li>Documentation, especially examples and usecases<br/>No, good JavaDocs are not scary noise...</li>
+			</ul>
+		    </section>
+                    <section>
+                        <h3>Consistency</h3>
+                        <ul>
+				<li>Concepts are applied throughout the API</li>
+				<ul>
+                                <li>Lookups in Netbeans Platform to find objects</li>
+                        		<pre><code data-trim>
+// as a service locator
+Lookup.getDefault().lookup(MyService.class)
+// react to available file
+Lookup selected = Utilities.actionsGlobalContext();
+Openable o = selected.lookup(Openable.class);
+                        		</code></pre>
+                                <li>Optionals in Guava</li>
+					<pre><code data-trim>
+Optional tryFind(Iterable iter, Predicate predicate)
+                        		</code></pre>
+				</ul>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Discoverability</h3>
+                        <ul>
+                                <li>Is the API easy to find and does it provide entry points</li>
+				<ul>
+                                <li>Netbeans</li>
+                                        <pre><code data-trim>
+Lookup.getDefault()
+                                        </code></pre>
+                                <li>Guava</li>
+                                        <pre><code data-trim>
+Iterables.find()
+ImmutableList.of()
+                                        </code></pre>
+				</ul>
+                        </ul>
+                    </section>
+                    <section>
+			<h3>Simplicity</h3>
+			<p>JavaMail API</p>
+			<ul>
+				<li>Very easy to write providers to create new protocols</li>
+				<li>Complicated to send mail</li>
+				<pre><code data-trim>
+      Session session = Session.getInstance(props,
+         new javax.mail.Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+               return new PasswordAuthentication(username, password);
+       }
+         });
+
+      try {
+       Message message = new MimeMessage(session);
+       message.setFrom(new InternetAddress(from));
+       message.setRecipients(Message.RecipientType.TO,
+               InternetAddress.parse(to));
+       message.setSubject("Testing Subject");
+       message.setText("easy");
+       Transport.send(message);
+      } catch (MessagingException e) {
+         throw new RuntimeException(e);
+      }
+				</code></pre>
+			</ul>
+		    </section>
+                    <section>
+                        <h3>Preservation of Investment</h3>
+                        <ul>
+                                <li>Coding against an API is an investment</li>
+				<li>Breaking changes are handled <em>very</em> deliberately</li>
+                        </ul>
+                    </section>
+                </section>
+                <section data-background-image="img/blue-ray.jpg"><h2>Lets see how we get there...</h2></section>
+                <!-- section data-background-image="img/dont-speak.png">
+                    <section><h3>Tell, don't ask!</h3></section>
+                    <section>
+                        <img src="img/tell-dont-ask.jpg"/>
+                        <p><sub>&copy; Martin Fowler</sub></p>
+                    </section>
+                    <section>
+                        <pre><code data-trim>
+car.getStarter().start()
+car.getElectronicSubsystem().start()
+car.getAudioSubsystem().start()
+                        </code></pre>
+                        <p class="fragment fade-up">vs.</p>
+                        <pre class="fragment fade-up"><code data-trim>
+car.start()
+                        </code></pre>                    
+                    </section>
+                </section -->
+                <section data-background-image="img/borat.jpg">
+                    <section>
+                        <p><h3>Avoid Indecent Exposure</h3></p>
+                        <p>Please keep your private parts to yourself!</p>
+                    </section>
+		    <section>
+			<h3>Tell, don't ask!</h3>
+			<ul>
+				<li>Do not expose more than the user needs</li>
+				<li>Think in terms of usecases for your API</li>
+				<li>Better have a feature requested than not used</li>
+				<li>Quality beats quantity</li>
+			</ul>
+		    </section>
+                    <section>
+                        <img src="img/tell-dont-ask.jpg"/>
+                        <p><sub>&copy; Martin Fowler</sub></p>
+                    </section>
+                    <section>
+                        <pre><code data-trim>
+car.getStarter().start()
+car.getElectronicSubsystem().start()
+car.getAudioSubsystem().start()
+                        </code></pre>
+                        <p class="fragment fade-up">vs.</p>
+                        <pre class="fragment fade-up"><code data-trim>
+car.start()
+                        </code></pre>
+                    </section>
+		    <section>
+			<h3>Use getters instead of field access</h3>
+			<ul>
+				<li>For the obvious reasons</li>
+				<ul><li>caching, lazy initialization, synchronization, ...</li></ul>
+				<li>Flexibility of moving method to superclass</li>
+				<ul><li>This happened in JDK 1.2</li></ul>
+                        	<pre><code data-trim>
+Dimension javax.swing.JComponent.getPreferredSize(Dimension d)
+// moved to
+Dimension java.awt.Component.getPreferredSize(Dimension d)
+                        	</code></pre>
+			</ul>
+		    </section>
+		    <section>
+			<h3>Favor factory method over constructor</h3>
+			<ul>
+				<li>Effective Java, Item 1</li>
+				<li>Factory methods can have meaningful names</li>
+				<li>Are not bound to return exact same class (e.g. subclass)</li>
+				<li>Caching of instances</li>
+				<li>Synchronization</li>
+			</ul>
+		    </section>
+                    <section>
+                        <h3>Allow inheritance explicitly</h3>
+                        <ul>
+                                <li>Make all classes final</li>
+				<li>Design classes with inheritance in mind, that are not final</li>
+                                <li>Testing becomes harder with final classes, so code against interfaces</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <p>But...</p>
+                        <p class="fragment">Beware of the <em>Jigsaw</em>!</p>
+                        <p class="fragment">Java 9 modules define exported packages explicitly</p>
+                    </section>
+                </section>
+                <section>Next slide please!</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>

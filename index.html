@@ -238,6 +238,67 @@ ImmutableList&lt;String&gt; results =
          .toList();
 			</code></pre>
 		    </section>
+                    <section>
+                        <h3>Avoid <code>null</code></h3>
+			<ul>
+				<li>Agree on project-wide standard</li>
+				<li>Explicitly design the case of a missing value using <em>Optionals</em></li>
+				<ul>
+					<li>Not only syntactic sugar</li>
+					<li>Serves as important API documentation</li>
+				</ul>
+			</ul>
+                    </section>
+		    <section>
+			<p>Java &lt; 8: Guavas Optional<p>
+                        <pre><code data-trim>
+// com.google.common.base.Optional
+static Optional&lt;T&gt; Optional.of(nonNullValue)
+static Optional&lt;T&gt; Optional.fromNullable(nullableValue)
+boolean Optional.isPresent()
+T Optional.or(otherValue)
+T Optional.orNull()
+                        </code></pre>
+                    </section>
+                    <section>
+                        <p>Java &ge; 8: java.util.Optional<p>
+                        <pre><code data-trim>
+static Optional&lt;T&gt; Optional.of(nonNullValue)
+static Optional&lt;T&gt; Optional.ofNullable(nullableValue)
+boolean Optional.isPresent()
+T Optional.orElse(otherValue)
+// more sugar: ifPresent, filter, map, flatMap, orElseThrow
+                        </code></pre>
+                    </section>
+		    <section>
+			<h3>Lambda expressions</h3>
+                        <pre><code data-trim>
+try {
+  Session session = sessionPool.borrowObject();
+  doSomething(session);
+} catch(PoolException) {
+  //handleException
+} finally {
+  sessionPool.returnObject(session);
+}
+                        </code></pre>
+
+                        <p class="fragment">vs.</p>
+
+                        <pre class="fragment"><code data-trim>
+@FunctionalInterface
+interface SessionTask {
+  void task(Session session);
+}
+
+void withSession(SessionTask task) {};
+
+void doSomething() {
+  withSession(session -&gt; doSomething(session));
+}
+                        </code></pre>
+                    </section>
+                    </section>
                 </section>
                 <section>Next slide please!</section>
 			</div>

@@ -51,7 +51,7 @@ Openable o = selected.lookup(Openable.class);
                         		</code></pre>
                                 <li>Optionals in Guava</li>
 					<pre><code data-trim>
-Optional tryFind(Iterable iter, Predicate predicate)
+Optional&lt;T&gt; Iterables.tryFind(Iterable&lt;T&gt; iter, Predicate&lt;? super T&gt; pred)
                         		</code></pre>
 				</ul>
                         </ul>
@@ -75,32 +75,44 @@ ImmutableList.of()
                     </section>
                     <section>
 			<h3>Simplicity</h3>
-			<p>JavaMail API</p>
 			<ul>
-				<li>Very easy to write providers to create new protocols</li>
-				<li>Complicated to send mail</li>
-				<pre><code data-trim>
-      Session session = Session.getInstance(props,
-         new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-               return new PasswordAuthentication(username, password);
-       }
-         });
-
-      try {
-       Message message = new MimeMessage(session);
-       message.setFrom(new InternetAddress(from));
-       message.setRecipients(Message.RecipientType.TO,
-               InternetAddress.parse(to));
-       message.setSubject("Testing Subject");
-       message.setText("easy");
-       Transport.send(message);
-      } catch (MessagingException e) {
-         throw new RuntimeException(e);
-      }
-				</code></pre>
+				<li>JPA Criteria API :-(</li>
 			</ul>
+				<pre><code data-trim>
+EntityManager em = ...;
+CriteriaBuilder builder = em.getCriteriaBuilder(); 
+CriteriaQuery&lt;Order&gt; cq = builder.createQuery(Order.class); 
+Root&lt;Order&gt; order = cq.from(Order.class); 
+order.join(Order_.positions); 
+cq.groupBy(order.get(Order_.id)).having(builder.gt(builder.count(order), 1)); 
+TypedQuery&lt;Order&gt; query = em.createQuery(cq); 
+List&lt;Order&gt; result = query.getResultList();
+				</code></pre>
 		    </section>
+                    <section>
+                        <ul>
+                                <li>Querydsl :-)</li>
+                        </ul>
+                                <pre><code data-trim data-noescape>
+EntityManager em = ...;
+List&lt;Order&gt; list = new JPAQuery(em)
+     .from(QOrder.order)
+     .where(order.positions.size().gt(1)) 
+     .list(order)
+     .getResults();
+                                </code></pre>
+                    </section>
+                    <section>
+                        <ul>
+                                <li>Worst-case: error prone API</li>
+			</ul>
+                                <pre><code data-trim data-noescape>
+new java.util.Date(2016, 11, 17);
+int year = 2016 – 1900;
+int month = 11 - 1;
+new java.util.Date(year, month, 17);
+                                </code></pre>
+                    </section>
                     <section>
                         <h3>Preservation of Investment</h3>
                         <ul>
@@ -110,24 +122,6 @@ ImmutableList.of()
                     </section>
                 </section>
                 <section data-background-image="img/blue-ray.jpg"><h2>Lets see how we get there...</h2></section>
-                <!-- section data-background-image="img/dont-speak.png">
-                    <section><h3>Tell, don't ask!</h3></section>
-                    <section>
-                        <img src="img/tell-dont-ask.jpg"/>
-                        <p><sub>&copy; Martin Fowler</sub></p>
-                    </section>
-                    <section>
-                        <pre><code data-trim>
-car.getStarter().start()
-car.getElectronicSubsystem().start()
-car.getAudioSubsystem().start()
-                        </code></pre>
-                        <p class="fragment fade-up">vs.</p>
-                        <pre class="fragment fade-up"><code data-trim>
-car.start()
-                        </code></pre>                    
-                    </section>
-                </section -->
                 <section data-background-image="img/borat.jpg">
                     <section>
                         <p><h3>Avoid Indecent Exposure</h3></p>
@@ -164,23 +158,40 @@ car.start()
 				<ul><li>caching, lazy initialization, synchronization, ...</li></ul>
 				<li>Flexibility of moving method to superclass</li>
 				<ul><li>This happened in JDK 1.2</li></ul>
+			</ul>
                         	<pre><code data-trim>
 Dimension javax.swing.JComponent.getPreferredSize(Dimension d)
 // moved to
 Dimension java.awt.Component.getPreferredSize(Dimension d)
                         	</code></pre>
-			</ul>
 		    </section>
 		    <section>
-			<h3>Favor factory method over constructor</h3>
+			<h3>Favor factory methods over constructor</h3>
 			<ul>
 				<li>Effective Java, Item 1</li>
 				<li>Factory methods can have meaningful names</li>
 				<li>Are not bound to return exact same class (e.g. subclass)</li>
-				<li>Caching of instances</li>
-				<li>Synchronization</li>
+				<li>Enables caching of instances, synchronizaton</li>
 			</ul>
+			<pre><code data-trim data-noescape>
+// factory method instead of copy constructor
+ImmutableSet.copyOf(other)
+			</code></pre>
 		    </section>
+                    <section>
+                        <h3>Favor builder over constructor for many parameters</h3>
+                        <ul>
+                                <li>Use builders instead of complex constructors</li>
+                                <li>Check for validity during object assembly</li>
+                        </ul>
+                        <pre><code data-trim>
+LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
+       .maximumSize(1000)
+       .expireAfterWrite(10, TimeUnit.MINUTES)
+       .removalListener(MY_LISTENER)
+       .build(...);
+                        </code></pre>
+                    </section>
                     <section>
                         <h3>Allow inheritance explicitly</h3>
                         <ul>

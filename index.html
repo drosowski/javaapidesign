@@ -25,8 +25,18 @@
 		<div class="reveal">
 			<div class="slides">
                 <section data-background-image="img/coffee-wall.jpg"><h1>Java API Design</h1></section>
+
+		<!-- ############# -->
+		<!-- top level section -->
+		<!-- ############# -->
+
                 <section data-background-image="img/coffee-wall.jpg"><h2>What's an API?<h2></section>
-                <section data-background-image="img/coffee-wall.jpg">
+
+		<!-- ############# -->
+		<!-- top level section -->
+		<!-- ############# -->
+
+                <section data-background-image="img/quality-bar.jpg">
                     <section><h2>What makes a <em>good</em> API?</h2></section>
 		    <section>
 			<h3>Comprehensibility</h3>
@@ -121,12 +131,13 @@ new java.util.Date(year, month, 17);
                         </ul>
                     </section>
                 </section>
-                <section data-background-image="img/blue-ray.jpg"><h2>Lets see how we get there...</h2></section>
-                <section data-background-image="img/borat.jpg">
-                    <section>
-                        <p><h3>Avoid Indecent Exposure</h3></p>
-                        <p>Please keep your private parts to yourself!</p>
-                    </section>
+
+		<!-- ############# -->
+		<!-- top level section -->
+		<!-- ############# -->
+
+                <section data-background-image="img/blue-ray.jpg">
+		    <section><h2>Lets see how we get there...</h2></section>
 		    <section>
 			<h3>Tell, don't ask!</h3>
 			<ul>
@@ -153,6 +164,7 @@ car.start()
                     </section>
 		    <section>
 			<h3>Use getters instead of field access</h3>
+			<p class="fragment"><small>...except for constants</small></p>
 			<ul>
 				<li>For the obvious reasons</li>
 				<ul><li>caching, lazy initialization, synchronization, ...</li></ul>
@@ -179,9 +191,9 @@ ImmutableSet.copyOf(other)
 			</code></pre>
 		    </section>
                     <section>
-                        <h3>Favor builder over constructor for many parameters</h3>
+                        <h3>Favor builders over constructor</h3>
                         <ul>
-                                <li>Use builders instead of complex constructors</li>
+                                <li>Use builders instead of complex constructors or many setters</li>
                                 <li>Check for validity during object assembly</li>
                         </ul>
                         <pre><code data-trim>
@@ -195,7 +207,7 @@ LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
                     <section>
                         <h3>Allow inheritance explicitly</h3>
                         <ul>
-                                <li>Make all classes final</li>
+				<li>Make all classes <em>final</em></li>
 				<li>Design classes with inheritance in mind, that are not final</li>
                                 <li>Testing becomes harder with final classes, so code against interfaces</li>
                         </ul>
@@ -205,6 +217,27 @@ LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
                         <p class="fragment">Beware of the <em>Jigsaw</em>!</p>
                         <p class="fragment">Java 9 modules define exported packages explicitly</p>
                     </section>
+		    <section>
+			<h3>Use fluent interfaces where applicable</h3>
+			<pre><code data-trim>
+Iterable&lt;String&gt; iter = Iterables.filter(
+	database.getClientList(), Client::isActiveInLastMonth);
+iter = Iterables.transform(iter, Object::toString);
+iter = Iterables.limit(iter, 10);
+List&lt;String&gt; result = Lists.newArrayList(iter);
+			</code></pre>
+
+			<p class="fragment">vs.</p>
+
+			<pre class="fragment"><code data-trim>
+ImmutableList&lt;String&gt; results = 
+	FluentIterable.from(database.getClientList())
+         .filter(Client::isActiveInLastMonth)
+         .transform(Object::toString)
+         .limit(10)
+         .toList();
+			</code></pre>
+		    </section>
                 </section>
                 <section>Next slide please!</section>
 			</div>

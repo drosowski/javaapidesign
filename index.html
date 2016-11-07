@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Java API Design</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/daniel.css">
@@ -30,7 +30,33 @@
 		<!-- top level section -->
 		<!-- ############# -->
 
-                <section data-background-image="img/coffee-wall.jpg"><h2>What's an API?<h2></section>
+                <section data-background-image="img/coffee-wall.jpg">
+		    <section>
+			<h2>What's an API?<h2>
+		    </section>
+		    <section>
+			<blockquote cite="https://en.wikipedia.org/wiki/Application_programming_interface">"In computer programming, an application programming interface (API) is a <span class="fragment highlight-green">set of subroutine definitions, protocols, and tools</span> for building software and applications. A good API makes it easier to develop a program by providing all the <span class="fragment highlight-green">building blocks</span>, which are then put together by the programmer."</blockquote>
+			<p>-- Wikipedia</p>
+		    </section>
+		    <section>
+			<h3>APIs come in different flavours</h3>
+			<ul>
+				<li>Private: internal use only (e.g. in a company)</li>
+				<li>Partner: Only specific business partners</li>
+				<li>Public: Available for use by the public</li>
+			</ul>
+		    </section>
+		    <section>
+			<h3>Why should you care?</h3>
+			<ul>
+				<li>If you program, you are an API designer</li>
+				<ul><li>Good code is modular - each module has an API</li></ul>
+				<li>Useful modules tend to get reused</li>
+				<ul><li>Good reusable modules are corporate assets</li></ul>
+				<li>Thinking in terms of APIs improves code quality</li>
+			</ul>
+		    </section>
+		</section>
 
 		<!-- ############# -->
 		<!-- top level section -->
@@ -118,6 +144,8 @@ List&lt;Order&gt; list = new JPAQuery(em)
 			</ul>
                                 <pre><code data-trim data-noescape>
 new java.util.Date(2016, 11, 17);
+                                </code></pre>
+                                <pre class="fragment"><code data-trim data-noescape>
 int year = 2016 – 1900;
 int month = 11 - 1;
 new java.util.Date(year, month, 17);
@@ -127,6 +155,8 @@ new java.util.Date(year, month, 17);
                         <h3>Preservation of Investment</h3>
                         <ul>
                                 <li>Coding against an API is an investment</li>
+				<li>Good API designers value their users</li>
+				<li>Changes are handled deliberately</li>
 				<li>Breaking changes are handled <em>very</em> deliberately</li>
                         </ul>
                     </section>
@@ -136,15 +166,26 @@ new java.util.Date(year, month, 17);
 		<!-- top level section -->
 		<!-- ############# -->
 
-                <section data-background-image="img/blue-ray.jpg">
+                <section data-background-image="img/way.jpg">
 		    <section><h2>Lets see how we get there...</h2></section>
+                    <section>
+                        <h3>Meta advice #1</h3>
+			<p>Grow your API from real world applications and actual needs!</p>
+                    </section>
+                    <section>
+                        <h3>Meta advice #2</h3>
+			<ul>
+			<li>Choose class modifiers (public, private, protected) wisely</li>
+			<li>Consider using a module system (OSGi, Jigsaw) to hide implementation details</li>
+			</ul>
+                    </section>
 		    <section>
-			<h3>Tell, don't ask!</h3>
+			<h3>Meta advice #2</h3>
+			<p>Tell, don't ask!</p>
 			<ul>
 				<li>Do not expose more than the user needs</li>
 				<li>Think in terms of usecases for your API</li>
 				<li>Better have a feature requested than not used</li>
-				<li>Quality beats quantity</li>
 			</ul>
 		    </section>
                     <section>
@@ -162,9 +203,14 @@ car.getAudioSubsystem().start()
 car.start()
                         </code></pre>
                     </section>
+                    <section>
+                        <p>But...</p>
+                        <p class="fragment">Beware of the <em>Jigsaw</em>!</p>
+                        <p class="fragment">Java 9 or OSGi modules define exported packages explicitly</p>
+                    </section>
 		    <section>
 			<h3>Use getters instead of field access</h3>
-			<p class="fragment"><small>...except for constants</small></p>
+			<p><small>...except for constants</small></p>
 			<ul>
 				<li>For the obvious reasons</li>
 				<ul><li>caching, lazy initialization, synchronization, ...</li></ul>
@@ -180,7 +226,6 @@ Dimension java.awt.Component.getPreferredSize(Dimension d)
 		    <section>
 			<h3>Favor factory methods over constructor</h3>
 			<ul>
-				<li>Effective Java, Item 1</li>
 				<li>Factory methods can have meaningful names</li>
 				<li>Are not bound to return exact same class (e.g. subclass)</li>
 				<li>Enables caching of instances, synchronizaton</li>
@@ -212,11 +257,6 @@ LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
                                 <li>Testing becomes harder with final classes, so code against interfaces</li>
                         </ul>
                     </section>
-                    <section>
-                        <p>But...</p>
-                        <p class="fragment">Beware of the <em>Jigsaw</em>!</p>
-                        <p class="fragment">Java 9 modules define exported packages explicitly</p>
-                    </section>
 		    <section>
 			<h3>Use fluent interfaces where applicable</h3>
 			<pre><code data-trim>
@@ -245,6 +285,7 @@ ImmutableList&lt;String&gt; results =
 				<li>Explicitly design the case of a missing value using <em>Optionals</em></li>
 				<ul>
 					<li>Not only syntactic sugar</li>
+					<li>No accidental passing of <code>null</code> value</li>
 					<li>Serves as important API documentation</li>
 				</ul>
 			</ul>
@@ -298,9 +339,116 @@ void doSomething() {
 }
                         </code></pre>
                     </section>
+                    <section>
+                        <h3>Exception handling</h3>
+                        <pre><code data-trim>
+/**
+ * Finds and returns a user.
+ * @return a User
+ */
+public User findUser(String query) throws UserNotFoundException
+                        </code></pre>
+			<ul>
+                                <li class="fragment">Use exceptions only for exceptional conditions</li>
+                                <li class="fragment">Favor the use of standard exceptions</li>
+                                <li class="fragment">Document all exceptions thrown by each method</li>
+                                <li class="fragment">Avoid unnecessary use of checked exceptions</li>
+                                <li class="fragment">Use checked exceptions for recoverable conditions and runtime exceptions for programming errors</li>
+                        </ul>
+                    </section>
+		    <section data-background-image="img/kitten.jpg">
+                        <p>Everytime you declare a method <mark><code>throws Exception</code></mark> a kitten dies!</p>
+		    </section>
+                    <section>
+                        <h3>Defensive programming</h3>
+                        <ul>
+                                <li>Don't underestimate the creativity of the users!</li>
+				<li>Explicitly check preconditions and fail fast</li>
+                        </ul>
+			<pre><code data-trim>
+Preconditions.checkNotNull(T ref, Object msg)
+Preconditions.checkState(T ref, Object msg)
+Preconditions.checkArgument(T ref, Object msg)
+			</code></pre>
                     </section>
                 </section>
-                <section>Next slide please!</section>
+                <section data-background-image="img/darwin.jpg">
+		    <section>
+                    	<h2>API Evolution</h2>
+		    </section>
+		    <section>
+                    	<h3>Meta advice #1</h3>
+			<p>Don't treat interfaces as published unless they are</p>
+		    </section>
+		    <section>
+                    	<h3>Meta advice #2</h3>
+			<p>Don't publish interfaces inside a team</p>
+		    </section>
+		    <section>
+                    	<h3>Meta advice #3</h3>
+			<p>Publish as little as you can as late as you can</p>
+		    </section>
+                    <section>
+                        <h3>Semantic Versioning</h3>
+                        <ul>
+                            <li>Version your API if you publish it</li>
+                            <li>MAJOR . MINOR . PATCHLEVEL</li>
+                            <li>1.0.0 is your first published version</li>
+                            <li>Minor version for binary compatible changes</li>
+                            <li>Major version for breaking changes (Angular 2 :-)</li>
+                        </ul>                        
+                    </section>                    
+                    <section>
+                        <h3>Removing methods</h3>
+                        <ul>
+                            <li>Communicate beforehand in next minor version</li>
+                            <li><code>@Deprecated</code> Annotation</li>
+                            <li><code>@deprecated</code> JavaDoc</li>
+                            <li>Remove in next major version</li>
+                        </ul>
+                        <pre><code data-trim>
+/**
+ * @deprecated since 1.1, use {@link #processFile(File, Path) instead
+ */                        
+@Deprecated                        
+public void processFile(File file) {}                        
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h3>Changing methods</h3>
+                        <pre><code data-trim>
+// change
+public void processFile(File file) {}
+// to
+public void processFile(File file, Path path) {}
+                        </code></pre>
+                    </section>
+                    <section>
+                        <ul>
+                            <li>Delegate to default behaviour</li>
+                            <pre><code data-trim>
+public void processFile(File file) {
+    processFile(file, Paths.get(System.getProperty("java.io.tmpdir")));
+}
+                            </code></pre>                            
+                            <li>No default? -&gt; Breaking change!</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Adding methods</h3>
+                        <ul>
+                            <li>Adding a method to a published interface is a breaking change!</li>
+                            <li class="fragment">Option 1: Don't care</li>
+                            <li class="fragment">Option 2: No Evolution (e.g. Java)</li>
+                            <li class="fragment">Option 3: Extension Interfaces (e.g. Eclipse)</li>
+			    <li class="fragment">Option 4: Adapter class (e.g. MouseAdapter)</li>
+			    <li class="fragment">Option 5 (Java8): Virtual extension methods</li>
+                            <pre class="fragment"><code data-trim>
+public void forEach(Block&lt;T&gt; b) default Collections.&lt;T&gt;setForEach; 
+                            </code></pre>
+			</ul>
+                    </section>                    
+                </section>
 			</div>
 		</div>
 

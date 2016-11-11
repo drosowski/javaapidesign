@@ -378,8 +378,8 @@ LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
 						</ul>
 						<pre><code data-trim>
 Preconditions.checkNotNull(T ref, Object msg)
-Preconditions.checkState(T ref, Object msg)
-Preconditions.checkArgument(T ref, Object msg)
+Preconditions.checkState(boolean exp, Object msg)
+Preconditions.checkArgument(boolean exp, Object msg)
 						</code></pre>
 					</section>
 					<section>
@@ -420,7 +420,7 @@ T Optional.orElse(otherValue)
 								<pre><code data-trim>
 try {
 	Session session = sessionPool.borrowObject();
-	doSomething(session);
+	session.doSomething();
 } catch(PoolException) {
 	//handleException
 } finally {
@@ -439,7 +439,7 @@ interface SessionTask {
 void withSession(SessionTask task) {};
 
 void doSomething() {
-	withSession(session -&gt; doSomething(session));
+	withSession(session -&gt; session.doSomething(session));
 }
 								</code></pre>
 							</section>
@@ -471,8 +471,8 @@ void doSomething() {
 									<li>Version your API if you publish it</li>
 									<li><span class="fragment highlight-red">MAJOR</span> . <span class="fragment highlight-green">MINOR</span> . <span class="fragment highlight-blue">PATCHLEVEL</span></li>
 									<li>1.0.0 is your first published version</li>
-									<li><span class="fragment highlight-blue">Minor</span> version for binary compatible changes</li>
-									<li><span class="fragment highlight-blue">Major</span> version for breaking changes (Angular 2 :-)</li>
+									<li>Minor version for binary compatible changes</li>
+									<li>Major version for breaking changes (Angular 2 :-)</li>
 								</ul>
 							</section>
 							<section>
@@ -497,7 +497,7 @@ public String readFile(File file) {}
 // change
 public String readFile(File file) {}
 // to
-public String readFile(File file, String default) {}
+public String readFile(File file, Path path) {}
 									</code></pre>
 								</section>
 								<section>
@@ -506,7 +506,7 @@ public String readFile(File file, String default) {}
 									</ul>
 										<pre><code data-trim>
 public String readFile(File file) {
-	return readFile(file, "Empty file");
+	return readFile(file, Paths.get(System.getProperty("java.io.tmpdir")));
 }
 										</code></pre>
 									<ul>

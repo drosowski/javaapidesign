@@ -144,11 +144,11 @@ List&lt;Order&gt; list = new JPAQuery(em)
 							<li>Worst-case: error prone API</li>
 						</ul>
 						<pre><code data-trim data-noescape>
-new java.util.Date(2016, 11, 17);
+new java.util.Date(2019, 07, 17);
 						</code></pre>
 						<pre class="fragment"><code data-trim data-noescape>
-int year = 2016 – 1900;
-int month = 11 - 1;
+int year = 2019 – 1900;
+int month = 7 - 1;
 new java.util.Date(year, month, 17);
 						</code></pre>
 					</section>
@@ -173,6 +173,14 @@ new java.util.Date(year, month, 17);
 				<section data-background-image="img/way1.jpg">
 					<section>
 						<h2>General Advice</h2>
+					</section>
+					<section>
+						<h3>Develop test-driven!</h3>
+						<ul>
+							<li>TDD not only verifies your code</li>
+							<li>It proves very benificial for the overall design of your system</li>
+							<li class="fragment"><em>If</em> you write your tests against your API</li>
+						</ul>
 					</section>
 					<section>
 						<h3>Hide as much as possible</h3>
@@ -235,8 +243,18 @@ ImmutableList&lt;String&gt; results =
  */
 public User findUser(String query) throws UserNotFoundException
 						</code></pre>
+						<pre class="fragment"><code data-trim>
+/**
+ * Finds and returns a user.
+ * @return a User
+ */
+public Optional&lt;User&gt; findUser(String query)
+						</code></pre>
+					</section>
+					<section>
+						<h3>Exception handling</h3>
 						<ul>
-							<li class="fragment">Use exceptions only for exceptional conditions</li>
+							<li>Use exceptions only for exceptional conditions</li>
 							<li class="fragment">Favor the use of standard exceptions</li>
 							<li class="fragment">Document all exceptions thrown by each method</li>
 							<li class="fragment">Avoid unnecessary use of checked exceptions</li>
@@ -267,11 +285,17 @@ public User findUser(String query) throws UserNotFoundException
 						<ul>
 							<li><span class="fragment highlight-blue">Package</span>: package-info.java can contain overview, e.g. class diagram</li>
 							<li><span class="fragment highlight-blue">Class</span>: What does this class do, what does an instance of this class represent</li>
-							<li><span class="fragment highlight-blue">Method</span>: Preconditions, postconditions, side-effects, parameters</li>
+							<li><span class="fragment highlight-blue">Method</span>: Preconditions, postconditions, side-effects, parameters, exceptions</li>
 						</ul>
 					</section>
 					<section>
-						<img src="img/javadoc_uml.jpg"/>
+						<img src="img/reactormono.png"/>
+					</section>
+					<section>
+						<img src="img/reactorflux.png"/>
+					</section>
+					<section>
+						<img src="img/reactorsubscribe.png"/>
 					</section>
 				</section>
 
@@ -327,7 +351,7 @@ LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
 					<section>
 						<h3>Minimize mutable state</h3>
 						<ul>
-							<li>Think hard: Does the class in question has to be immutable?</li>
+							<li>Think hard: Does the class in question has to be mutable?</li>
 							<ul>
 								<li>Pros: thread-safe, easily cacheable</li>
 								<li>Cons: Seperate object for each value</li>
@@ -410,6 +434,7 @@ T Optional.orNull()
 								<pre><code data-trim>
 static Optional&lt;T&gt; Optional.of(nonNullValue)
 static Optional&lt;T&gt; Optional.ofNullable(nullableValue)
+&lt;U&gt; Optional&lt;U&gt; map(Function&lt;? super T, ? extends U&gt; mapper)
 boolean Optional.isPresent()
 T Optional.orElse(otherValue)
 // more sugar: ifPresent, filter, map, flatMap, orElseThrow
@@ -554,7 +579,7 @@ public interface Iterator&lt;E&gt; {
 									<img height="410" width="300" src="img/practical_api.jpg"/>
 									<img height="410" width="300" src="img/effjava.jpg"/>
 									<ul>
-										<li><a href="http://bitly.com/1s9Hbgo">http://bitly.com/1s9Hbgo</a></li>
+										<li><a href="https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/32713.pdf">https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/32713.pdf</a></li>
 										<li><a href="http://bit.ly/1dSQPfY">http://bit.ly/1dSQPfY</a></li>
 										<li><a href="http://bit.ly/2fe7JcV">http://bit.ly/2fe7JcV</a></li>
 									</ul>
